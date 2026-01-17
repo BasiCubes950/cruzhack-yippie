@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Activity Finder</title>
+  <title>UCSC Activity Finder</title>
   <style>
 
     body {
@@ -11,7 +11,9 @@
       height: 520px;
       padding: 10px;
       box-sizing: border-box;
-      background-image: url("campus-and-monterey-bay-scaled.jpg");
+      background-image: url("Homepage.png");
+      background-size: cover;
+      background-repeat: no-repeat;
     }
 
     /* ---------- SHARED ---------- */
@@ -34,17 +36,21 @@
     /* ---------- HOME PAGE ---------- */
     #home {
       text-align: center;
-      margin-top: 70px;
+      margin-top: 110%;
     }
 
-    #home h1 {
-      margin-bottom: 80px;
-      font-size: 24px;
-    }
 
     #startBtn {
       width: 70%;
       margin: 0 auto;
+      font-size: 30px;
+      font-weight: bold;
+      color: white;
+      background-color: #182b49;
+      padding-top: 30px;
+      padding-bottom: 30px;
+      border-radius:30px;
+      border-style: hidden;
     }
 
     /* ---------- QUIZ ---------- */
@@ -101,8 +107,7 @@
 
   <!-- HOME PAGE -->
   <div id="home">
-    <h1>Activity Finder</h1>
-    <button id="startBtn">Start</button>
+    <button id="startBtn">EXPLORE</button>
   </div>
 
   <!-- QUIZ + RESULTS -->
