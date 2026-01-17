@@ -1,54 +1,70 @@
+from openai import OpenAI
 import json
+import searching as search
 
-def load_activities(json_file="activities.json"):
-    with open(json_file, "r", encoding="utf-8") as f:
-        return json.load(f)
+client = OpenAI()
 
-
-def search_clubs(activities, tags, user_gender):
+def rank_clubs_with_gpt(clubs, user_profile):
     """
-    activities: list of dicts loaded from activities.json
-    tags: iterable of tags to search
-    user_gender: "***", "**", or "*"
+    clubs: list of dicts from search_clubs()
+    user_profile: dict describing interests and goals
 
-    returns: list of (name, contact, link)
+    returns: clubs sorted by relevance (best first)
     """
 
-    results = []
-    seen = set()
+    prompt = {
+        "user_profile": user_profile,
+        "clubs": clubs,
+        "task": (
+            "Rank the clubs from most relevant to least relevant based on the user profile. "
+            "Do not remove clubs. Do not add new clubs. "
+            "Return JSON only in the format:\n"
+            "[{name, reason}]\n"
+        )
+    }
 
-    for activity in activities:
-        for tag in tags:
-            if tag not in activity:
-                continue
+    response = client.chat.completions.create(
+        model="gpt-4.1-mini",  # fast + cheap, good for ranking
+        messages=[
+            {"role": "system", "content": "You are a recommendation engine. Be concise and objective."},
+            {"role": "user", "content": json.dumps(prompt)}
+        ],
+        temperature=0.2
+    )
 
-            for club in activity[tag]:
-                club_name = club[0]
-                contact = club[1]   # Instagram
-                link = club[1]
+    ranked = json.loads(response.choices[0].message.content)
 
-                # gender check ONLY if block exists
-                if len(club) >= 3 and club[2] != user_gender:
-                    continue
+    # Merge ranking back into original club objects
+    club_map = {c["name"]: c for c in clubs}
+    result = []
 
-                key = (club_name, contact)
-                if key not in seen:
-                    seen.add(key)
-                    results.append((club_name, contact, link))
+    for item in ranked:
+        club = club_map.get(item["name"])
+        if club:
+            club["reason"] = item["reason"]
+            result.append(club)
 
-    return results
+    return result
 
-"""
-* -> other
-** -> women
-*** ->  men
-"""
+user_profile = {
+    "goals": ["helping others", "social impact"],
+    "interests": ["STEM", "technology", "volunteering"],
+    "preferred_commitment": "hands-on",
+    "experience_level": "high school / early college",
+}
 
-user_gender = "**"
-tags = {"volunteering", "community"}
+activities_data = search.load_activities("activities.json")
 
-activities = load_activities("activities.json")
-matches = search_clubs(activities, tags, user_gender)
+filtered = search.search_clubs(
+    activities=activities_data,
+    tags={"volunteering", "STEM"},
+    user_gender="**"
+)
 
-for name, contact, link in matches:
-    print(name, contact, link)
+ranked = rank_clubs_with_gpt(filtered, user_profile)
+
+for i, club in enumerate(ranked, 1):
+    print(f"{i}. {club['name']}")
+    print(f"   Why: {club['reason']}")
+    print(f"   Contact: {club['email']}")
+    print("-" * 40)
