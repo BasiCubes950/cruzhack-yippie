@@ -4,7 +4,6 @@ def load_activities(json_file="activities.json"):
     with open(json_file, "r", encoding="utf-8") as f:
         return json.load(f)
 
-
 def search_clubs(activities, tags, user_gender):
     """
     activities: list of dicts loaded from activities.json
