@@ -15,6 +15,7 @@
       background-size: cover;
       background-repeat: no-repeat;
     }
+    
 
     /* ---------- SHARED ---------- */
     button {
@@ -62,10 +63,12 @@
 
     .q-title {
       font-weight: bold;
-      margin-bottom: 50px;
-      
-      font-size: 40px;
+      margin-bottom: 70px;
+      display:block;
+      height:100px;
+      font-size: 30px;
       color: #ffcd00;
+      
     }
 
     .opt {
@@ -77,7 +80,7 @@
       border-radius: 12px;
       cursor: pointer;
       text-align: center;
-      font-size: 22px;
+      font-size: 13px;
       transition: all 0.2s ease;
       user-select: none;
       font-weight: bold;
@@ -132,6 +135,11 @@
       margin-top: 10px;
     }
 
+    #resetBtn {
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+
   </style>
 </head>
 <body>
@@ -153,7 +161,6 @@
     
     <button id="resetBtn" class="hidden">Start Over</button>
 
-    <button id="resetBtn" class="hidden">Start Over</button>
 
     <div id="status" class="small"></div>
 

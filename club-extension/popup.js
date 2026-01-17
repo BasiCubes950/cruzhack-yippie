@@ -365,6 +365,8 @@ function goBack() {
   document.body.style.backgroundImage = "url('Quiz.png')";
   const statusDiv = document.getElementById("status");
   statusDiv.textContent = "";
+  document.getElementById("backBtn").style.marginTop = "0px";
+  document.getElementById("nextBtn").style.marginTop = "0px";
 
   const prev = appState.history.pop();
   if (!prev) return;
@@ -409,6 +411,8 @@ function resetApp() {
   appDiv.classList.add("hidden");
   homeDiv.classList.remove("hidden");
   document.body.style.backgroundImage = "url('Homepage.png')";
+  document.getElementById("backBtn").style.marginTop = "0px";
+  document.getElementById("nextBtn").style.marginTop = "0px";
 }
 
 
@@ -435,7 +439,10 @@ async function runSearch() {
   statusDiv.textContent = `${matches.length} clubs found`;
   renderResults(matches, resultsDiv);
   document.getElementById("resetBtn").classList.remove("hidden");
+  document.getElementById("quiz").innerHTML = "";
   document.body.style.backgroundImage = "url('Results.png')";
+  document.getElementById("backBtn").style.marginTop = "60px";
+  document.getElementById("nextBtn").style.marginTop = "60px";
 }
 
 // -------------------- INIT --------------------
