@@ -1,6 +1,16 @@
 // popup.js
 // Branching quiz wizard + local activities.json search (no server)
 
+const homeDiv = document.getElementById("home");
+const appDiv = document.getElementById("app");
+
+document.getElementById("startBtn").addEventListener("click", () => {
+  homeDiv.classList.add("hidden");
+  appDiv.classList.remove("hidden");
+  renderStep();
+});
+
+
 // -------------------- DATA LOAD --------------------
 async function loadActivities() {
   const url = chrome.runtime.getURL("activities.json");
@@ -378,18 +388,21 @@ function goBack() {
 }
 
 function resetApp() {
-  // reset state
   appState.userGender = null;
   appState.tags = new Set();
   appState.history = [];
   appState.stepId = "gender_profile";
 
-  // reset UI
   document.getElementById("results").innerHTML = "";
   document.getElementById("status").textContent = "";
   document.getElementById("resetBtn").classList.add("hidden");
 
-  renderStep();
+  document.getElementById("nextBtn").textContent = "Next";
+  document.getElementById("nextBtn").dataset.mode = "next";
+
+  // go back to homepage
+  appDiv.classList.add("hidden");
+  homeDiv.classList.remove("hidden");
 }
 
 
@@ -436,6 +449,4 @@ document.getElementById("nextBtn").addEventListener("click", async () => {
   }
 });
 
-// initial render
-renderStep();
 document.getElementById("resetBtn").addEventListener("click", resetApp);
