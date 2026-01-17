@@ -10,13 +10,20 @@
       height: 520px;
       padding: 10px;
       box-sizing: border-box;
+
       background-image: url("Homepage.png");
       background-size: cover;
       background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;   /* ✅ background stays still */
+      overflow: hidden;              /* ✅ body never scrolls */
     }
 
-    #all{
-      overflow: hidden;
+    /* Wrapper fills the popup */
+    #all {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     /* ---------- SHARED ---------- */
@@ -30,9 +37,7 @@
       font-weight: bold;
     }
 
-    .hidden {
-      display: none;
-    }
+    .hidden { display: none; }
 
     .small {
       font-size: 12px;
@@ -45,7 +50,6 @@
       margin-top: 110%;
     }
 
-
     #startBtn {
       margin: 0 auto;
       color: white;
@@ -54,10 +58,33 @@
       margin-bottom: 30px;
     }
 
-    /* ---------- QUIZ ---------- */
-    .q {
-      margin-top: 12px;
+    /* Yellow overlay to hide buttons on homepage */
+    #homeOverlay {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background-color: #c69214;
+      z-index: 10;
+      pointer-events: none;
     }
+
+    #homeOverlay.hidden {
+      display: none;
+    }
+
+    /* ---------- QUIZ + RESULTS CONTAINER ---------- */
+    #app {
+      /* Takes full available popup space */
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0; /* ✅ allows children to scroll properly in flex layouts */
+    }
+
+    /* ---------- QUIZ ---------- */
+    .q { margin-top: 12px; }
 
     .q-title {
       font-weight: bold;
@@ -94,11 +121,18 @@
       border-color: #182b49;
     }
 
-    .opt.selected:hover {
-      background: #0f1e36;
-    }
+    .opt.selected:hover { background: #0f1e36; }
 
     /* ---------- RESULTS ---------- */
+    /* ✅ Only this section scrolls, so background stays still */
+    #results {
+      flex: 1;               /* fill remaining space */
+      min-height: 0;         /* ✅ required so overflow works in flex */
+      overflow-y: auto;      /* ✅ scrollable */
+      padding-right: 6px;    /* avoid scrollbar overlap */
+      margin-top: 8px;
+    }
+
     .club {
       margin-top: 12px;
       padding-top: 8px;
@@ -132,13 +166,13 @@
       margin-top: 10px;
     }
 
-    #resetBtn{
+    #resetBtn {
       margin-top: 12px;
       margin-bottom: 12px;
     }
-
   </style>
 </head>
+
 <body>
   <div id="all">
     <!-- HOME PAGE -->
@@ -147,23 +181,27 @@
       <button id="luckyBtn">I'M FEELING LUCKY</button>
     </div>
 
+    <!-- Yellow overlay to hide Back/Next buttons on homepage -->
+    <div id="homeOverlay"></div>
+
     <!-- QUIZ + RESULTS -->
     <div id="app" class="hidden">
-
       <div id="quiz"></div>
 
       <div id="navRow">
         <button id="backBtn">Back</button>
         <button id="nextBtn">Next</button>
       </div>
-      
+
       <button id="resetBtn" class="hidden">Start Over</button>
 
       <div id="status" class="small"></div>
 
+      <!-- ✅ This is the only scrollable container -->
       <div id="results"></div>
     </div>
   </div>
+
   <script src="popup.js"></script>
 </body>
 </html>

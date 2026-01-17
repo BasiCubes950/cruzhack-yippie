@@ -7,6 +7,7 @@ const appDiv = document.getElementById("app");
 document.getElementById("startBtn").addEventListener("click", () => {
   homeDiv.classList.add("hidden");
   appDiv.classList.remove("hidden");
+  document.getElementById("homeOverlay").classList.add("hidden");
   document.body.style.backgroundImage = "url('Quiz.png')";
   renderStep();
 });
@@ -420,6 +421,7 @@ function resetApp() {
   // go back to homepage
   appDiv.classList.add("hidden");
   homeDiv.classList.remove("hidden");
+  document.getElementById("homeOverlay").classList.remove("hidden");
   document.body.style.backgroundImage = "url('Homepage.png')";
   document.getElementById("nextBtn").style.marginTop = "0px";
   document.getElementById("backBtn").style.marginTop = "0px";
