@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <title>UCSC Activity Finder</title>
   <style>
-
     body {
       font-family: Arial, sans-serif;
       width: 360px;
@@ -14,6 +13,10 @@
       background-image: url("Homepage.png");
       background-size: cover;
       background-repeat: no-repeat;
+    }
+
+    #all{
+      overflow: hidden;
     }
 
     /* ---------- SHARED ---------- */
@@ -44,15 +47,11 @@
 
 
     #startBtn {
-      width: 70%;
       margin: 0 auto;
-      font-size: 30px;
       color: white;
       background-color: #182b49;
-      padding-top: 30px;
-      padding-bottom: 30px;
-      border-radius:30px;
       border-style: hidden;
+      margin-bottom: 30px;
     }
 
     /* ---------- QUIZ ---------- */
@@ -133,33 +132,38 @@
       margin-top: 10px;
     }
 
+    #resetBtn{
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+
   </style>
 </head>
 <body>
-
-  <!-- HOME PAGE -->
-  <div id="home">
-    <button id="startBtn">EXPLORE</button>
-    <button id="luckyBtn">I'M FEELING LUCKY</button>
-  </div>
-
-  <!-- QUIZ + RESULTS -->
-  <div id="app" class="hidden">
-
-    <div id="quiz"></div>
-
-    <div id="navRow">
-      <button id="backBtn">Back</button>
-      <button id="nextBtn">Next</button>
+  <div id="all">
+    <!-- HOME PAGE -->
+    <div id="home">
+      <button id="startBtn">EXPLORE</button>
+      <button id="luckyBtn">I'M FEELING LUCKY</button>
     </div>
-    
-    <button id="resetBtn" class="hidden">Start Over</button>
 
-    <div id="status" class="small"></div>
+    <!-- QUIZ + RESULTS -->
+    <div id="app" class="hidden">
 
-    <div id="results"></div>
+      <div id="quiz"></div>
+
+      <div id="navRow">
+        <button id="backBtn">Back</button>
+        <button id="nextBtn">Next</button>
+      </div>
+      
+      <button id="resetBtn" class="hidden">Start Over</button>
+
+      <div id="status" class="small"></div>
+
+      <div id="results"></div>
+    </div>
   </div>
-
   <script src="popup.js"></script>
 </body>
 </html>
