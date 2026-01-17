@@ -22,6 +22,9 @@
       padding: 10px;
       font-size: 14px;
       cursor: pointer;
+      border-radius: 12px;
+      border-style: hidden;
+      font-weight: bold;
     }
 
     .hidden {
@@ -44,7 +47,6 @@
       width: 70%;
       margin: 0 auto;
       font-size: 30px;
-      font-weight: bold;
       color: white;
       background-color: #182b49;
       padding-top: 30px;
@@ -59,13 +61,41 @@
     }
 
     .q-title {
-      font-weight: 600;
-      margin-bottom: 6px;
+      font-weight: bold;
+      margin-bottom: 50px;
+      
+      font-size: 40px;
+      color: #ffcd00;
     }
 
     .opt {
       display: block;
-      margin: 6px 0;
+      padding: 14px;
+      margin: 8px 0;
+      background: #ffffff;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 22px;
+      transition: all 0.2s ease;
+      user-select: none;
+      font-weight: bold;
+    }
+
+    .opt:hover {
+      background: #f0f0f0;
+      border-color: #182b49;
+    }
+
+    .opt.selected {
+      background: #182b49;
+      color: white;
+      border-color: #182b49;
+    }
+
+    .opt.selected:hover {
+      background: #0f1e36;
     }
 
     /* ---------- RESULTS ---------- */
@@ -101,6 +131,7 @@
       gap: 8px;
       margin-top: 10px;
     }
+
   </style>
 </head>
 <body>

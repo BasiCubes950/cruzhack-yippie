@@ -120,8 +120,6 @@ function genderAnswerToBlock(answer) {
 }
 
 // -------------------- LEAF -> TAG MAPPING --------------------
-// These are the (#) endpoints you referenced.
-// Update these strings to match your activities.json tag columns exactly.
 const LEAF_TAGS = {
   // PURPOSE / IMPACT
   "#11": ["volunteering"],
@@ -145,9 +143,6 @@ const LEAF_TAGS = {
   "#4": ["identity-support"]
 };
 
-// If your JSON doesn't contain some of the above tag strings,
-// just delete or change them—search will only return matches for existing tags.
-
 // -------------------- WIZARD STATE --------------------
 const appState = {
   userGender: null,
@@ -160,7 +155,7 @@ const appState = {
 // -------------------- QUIZ STEPS (BRANCHING) --------------------
 const STEPS = {
   gender_profile: {
-    title: "Profiling: What is your Gender?",
+    title: "Profiling: How do you define yourself?",
     type: "radio",
     options: [
       { label: "Male", value: "Male", next: "q1" },
@@ -179,7 +174,7 @@ const STEPS = {
     options: [
       { label: "Meeting people with similar interest", value: "similar", next: "q_meet_similar" },
       { label: "Something purposeful or growth-focused", value: "purpose", next: "q_purpose_growth" },
-      { label: "Not sure", value: "not_sure", next: "q_hobbies" } // per your note: Not sure -> go hobbies-ish
+      { label: "Not sure", value: "not_sure", next: "q_hobbies" }
     ]
   },
 
@@ -190,7 +185,7 @@ const STEPS = {
     options: [
       { label: "Helping others / social impact", value: "impact", next: "q_meaning_impact" },
       { label: "Learning skills or experience", value: "skills", next: "q_meaning_skills" },
-      { label: "Not sure", value: "not_sure", next: "leaf_11" } // Not sure -> volunteering (#11)
+      { label: "Not sure", value: "not_sure", next: "leaf_11" }
     ]
   },
 
@@ -313,26 +308,32 @@ function renderStep() {
   const optionsWrap = document.createElement("div");
   optionsWrap.id = "optionsWrap";
 
+  // div 기반 커스텀 버튼으로 옵션 생성
   for (const opt of step.options) {
-    const label = document.createElement("label");
-    label.className = "opt";
-    label.innerHTML = `
-      <input type="radio" name="wizard_choice" value="${opt.value}">
-      ${opt.label}
-    `;
-    optionsWrap.appendChild(label);
+    const optDiv = document.createElement("div");
+    optDiv.className = "opt";
+    optDiv.dataset.value = opt.value;
+    optDiv.textContent = opt.label;
+
+    optDiv.addEventListener("click", () => {
+      document.querySelectorAll(".opt").forEach(el => el.classList.remove("selected"));
+      optDiv.classList.add("selected");
+    });
+
+    optionsWrap.appendChild(optDiv);
   }
 
   q.appendChild(optionsWrap);
   quizDiv.appendChild(q);
 }
 
-// -------------------- NAVIGATION --------------------
+// -------------------- 선택값 가져오기 --------------------
 function getSelectedValue() {
-  const el = document.querySelector('input[name="wizard_choice"]:checked');
-  return el ? el.value : null;
+  const selectedEl = document.querySelector(".opt.selected");
+  return selectedEl ? selectedEl.dataset.value : null;
 }
 
+// -------------------- NAVIGATION --------------------
 function goNext() {
   const statusDiv = document.getElementById("status");
   const step = STEPS[appState.stepId];
@@ -361,6 +362,7 @@ function goNext() {
 }
 
 function goBack() {
+  document.body.style.backgroundImage = "url('Quiz.png')";
   const statusDiv = document.getElementById("status");
   statusDiv.textContent = "";
 
@@ -437,12 +439,6 @@ async function runSearch() {
 }
 
 // -------------------- INIT --------------------
-// Your popup.html must have these IDs:
-// - quiz
-// - status
-// - results
-// - backBtn
-// - nextBtn
 document.getElementById("backBtn").addEventListener("click", goBack);
 
 document.getElementById("nextBtn").addEventListener("click", async () => {
