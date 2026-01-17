@@ -3,58 +3,65 @@ import json
 from collections import defaultdict
 
 def build_activities_from_sheet(file_path, output_json="activities.json"):
-    # Load data (handles both CSV and Excel based on extension)
+    # Load data
     if file_path.endswith('.csv'):
-        df = pd.read_csv(file_path)
+        # using utf-8-sig to handle BOM if present, otherwise utf-8
+        df = pd.read_csv(file_path, encoding='utf-8')
     else:
         df = pd.read_excel(file_path)
 
     activities_map = defaultdict(list)
 
     # 1. Config: Gender Mapping
-    # The data provided only has "women", but we keep the structure generic
     GENDER_MAP = {
         "women": "**",
         "men": "***",
         "other": "*"
     }
 
-    # 2. Config: Columns that should NOT be treated as activity tags
-    # Updated 'Club name' -> 'Club' based on your CSV header
-    NON_TAG_COLS = {"Club", "Instagram", "Email"}
+    # 2. Config: Columns to exclude from being treated as Tags
+    NON_TAG_COLS = {"Club", "Instagram", "Email", "Original Description"}
 
-    # Dynamically determine which columns are tags
+    # Dynamically identify tag columns
     tag_columns = [c for c in df.columns if c not in NON_TAG_COLS]
 
     for _, row in df.iterrows():
-        # Get basic info
-        club_name = row["Club"]
+        # --- Extract Basic Info ---
+        club_name = str(row["Club"]).strip()
         
-        # Handle Instagram: Check for NaN (empty cells) and convert to string
+        # Instagram
         raw_link = row.get("Instagram")
-        link = str(raw_link) if pd.notna(raw_link) else ""
+        link = str(raw_link).strip() if pd.notna(raw_link) else ""
 
-        # 3. Logic: Detect gender block
+        # Description
+        raw_desc = row.get("Original Description")
+        description = str(raw_desc).strip() if pd.notna(raw_desc) else ""
+
+        # Contact / Email
+        raw_email = row.get("Email")
+        email = str(raw_email).strip() if pd.notna(raw_email) else ""
+
+        # --- Detect Gender Block ---
         gender_block = None
         for gender_col, symbol in GENDER_MAP.items():
-            # Check if column exists in this sheet and mark is 'X'
             if gender_col in df.columns:
-                cell_value = str(row.get(gender_col)).strip().lower()
-                if cell_value == "x":
+                val = str(row.get(gender_col)).strip().lower()
+                if val == "x":
                     gender_block = symbol
                     break
 
-        # 4. Logic: Assign club to tags
+        # --- Build Tag Lists ---
         for tag in tag_columns:
             # Skip gender columns (they are attributes, not categories)
             if tag in GENDER_MAP:
                 continue
 
-            # Check if club has 'X' for this tag (using strip() to clean dirty inputs)
+            # Check if this club belongs to this tag
             if str(row.get(tag)).strip().lower() == "x":
                 
-                # Construct the entry: [Name, Link, (Optional Gender)]
-                entry = [club_name, link]
+                # Construct the entry
+                # Order: [Name, Instagram, Description, Email, (Gender)]
+                entry = [club_name, link, description, email]
                 
                 if gender_block:
                     entry.append(gender_block)
@@ -64,11 +71,12 @@ def build_activities_from_sheet(file_path, output_json="activities.json"):
     # Convert to list-of-dicts format
     activities = [{tag: clubs} for tag, clubs in activities_map.items()]
 
-    # Save to json
+    # Save to JSON
     with open(output_json, "w", encoding="utf-8") as f:
-        json.dump(activities, f, indent=2)
+        json.dump(activities, f, indent=2, ensure_ascii=False)
 
+    print(f"Processed {len(activities)} categories successfully.")
     return activities
 
-# Usage Example:
+# Usage
 activities = build_activities_from_sheet("dirty table.xlsx")

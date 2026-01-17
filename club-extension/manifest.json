@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Club Finder",
   "version": "1.0",
-  "description": "Simple button-based Chrome extension",
+  "description": "Search clubs using a local JSON file",
   "action": {
     "default_popup": "popup.html"
   }
