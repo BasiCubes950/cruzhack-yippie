@@ -101,6 +101,11 @@
   <div id="home">
     <h1>Activity Finder</h1>
     <button id="startBtn">Start</button>
+    <div style="margin-top: 15px;">
+      <label for="resumeInput" style="font-size: 12px; color: #666; display: block; margin-bottom: 8px;">Or upload resume:</label>
+      <input type="file" id="resumeInput" accept=".pdf" style="font-size: 11px;">
+      <button id="uploadBtn" style="margin-top: 8px; display: none;">Analyze Resume</button>
+    </div>
   </div>
 
   <!-- QUIZ + RESULTS -->
@@ -120,6 +125,11 @@
     <div id="results"></div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    // Set up PDF.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  </script>
   <script src="popup.js"></script>
 </body>
 </html>

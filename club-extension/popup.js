@@ -4,12 +4,224 @@
 const homeDiv = document.getElementById("home");
 const appDiv = document.getElementById("app");
 
+// Resume file handling
+const resumeInput = document.getElementById("resumeInput");
+let selectedResumeFile = null;
+
+// Initialize PDF.js and enable resume upload when ready
+function initializePDFJS() {
+  // Resume upload is ready - no external library needed
+  console.log("Resume upload ready");
+}
+
+// Initialize on page load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializePDFJS);
+} else {
+  initializePDFJS();
+}
+
+resumeInput.addEventListener("change", async (e) => {
+  selectedResumeFile = e.target.files[0];
+  if (selectedResumeFile) {
+    homeDiv.classList.add("hidden");
+    appDiv.classList.remove("hidden");
+    await analyzeResume(selectedResumeFile);
+  }
+});
+
 document.getElementById("startBtn").addEventListener("click", () => {
   homeDiv.classList.add("hidden");
   appDiv.classList.remove("hidden");
   renderStep();
 });
 
+
+
+// -------------------- RESUME KEYWORDS (for tag extraction) --------------------
+const RESUME_KEYWORDS = {
+  "volunteering": ["volunteered", "volunteering", "volunteer", "community service", "outreach", "philanthrop"],
+  "advocacy / civic": ["advocacy", "civic", "campaign", "lobbied", "grassroots", "activist", "advocate"],
+  "mentorship": ["mentor", "mentored", "mentoring", "mentorship", "coached", "guided", "advised"],
+  "professional-development": ["professional", "certification", "certified", "training", "workshop", "development"],
+  "business": ["business", "entrepreneurship", "startup", "management", "finance", "negotiat"],
+  "skill-building": ["skill", "build", "technical", "learned", "mastered", "proficient"],
+  "STEM": ["STEM", "stem", "engineering", "engineer", "stem", "science", "research", "analytics", "data"],
+  "computing": ["computer", "computing", "programming", "coding", "software", "developer", "development", "code", "algorithm"],
+  "research": ["learn", "research", "published", "investigation", "study", "project"],
+  "design": ["design", "designer", "ui", "ux", "graphic", "visual", "creative"],
+  "music": ["music", "musician", "instrument", "band", "orchestra", "singing"],
+  "performing-arts": ["art", "perform", "theater", "dance", "drama", "acting", "play"],
+  "media / publication": ["media", "public", "publication", "writing", "journalist", "editor", "author"],
+  "identity": ["id", "diversity", "identity", "culture", "heritage", "ethnicity", "lgbtq"],
+  "gaming": ["gaming", "game", "esports", "competitive", "video game"]
+};
+
+// -------------------- RESUME TEXT EXTRACTION --------------------
+async function extractTextFromPDF(file) {
+  // Simple text extraction from file
+  // For PDF files, we do basic text extraction by reading as text
+  try {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        try {
+          // For text files, just use the content directly
+          if (file.name.endsWith('.txt')) {
+            resolve(event.target.result.toLowerCase());
+          } else if (file.name.endsWith('.pdf')) {
+            // For PDF, try to extract text by reading as text (limited)
+            // This is a fallback that extracts what text can be read directly
+            const text = event.target.result;
+            const extracted = String.fromCharCode.apply(null, new Uint8Array(text))
+              .toLowerCase()
+              .replace(/[^\w\s]/g, ' ');
+            resolve(extracted);
+          } else {
+            resolve(event.target.result.toLowerCase());
+          }
+        } catch (error) {
+          reject(new Error("Failed to read file: " + error.message));
+        }
+      };
+      
+      reader.onerror = () => {
+        reject(new Error("Failed to read file"));
+      };
+      
+      // Try to read as text first
+      if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+        reader.readAsText(file);
+      } else {
+        // For PDF and binary, read as text to extract what we can
+        reader.readAsText(file, 'latin1');
+      }
+    });
+  } catch (error) {
+    console.error("Error extracting text:", error);
+    throw error;
+  }
+}
+
+// -------------------- TAG EXTRACTION FROM RESUME --------------------
+function extractTagsFromResume(resumeText) {
+  const extractedTags = new Set();
+  const tagScores = {};
+  
+  console.log("Resume text length:", resumeText.length);
+  console.log("First 500 chars:", resumeText.substring(0, 500));
+  
+  for (const [tag, keywords] of Object.entries(RESUME_KEYWORDS)) {
+    let score = 0;
+    for (const keyword of keywords) {
+      // Use simple substring matching as fallback since PDF extraction might not preserve word boundaries
+      const lowerKeyword = keyword.toLowerCase();
+      const resumeLower = resumeText.toLowerCase();
+      
+      // Count occurrences with both regex (for word boundaries) and simple substring matching
+      let matches = 0;
+      
+      // Try word boundary regex first
+      try {
+        const regex = new RegExp(`\\b${lowerKeyword}\\w*\\b`, 'g');
+        const regexMatches = resumeLower.match(regex);
+        matches = regexMatches ? regexMatches.length : 0;
+      } catch (e) {
+        matches = 0;
+      }
+      
+      // If regex didn't find anything, try simple substring matching
+      if (matches === 0) {
+        const index = resumeLower.indexOf(lowerKeyword);
+        if (index !== -1) {
+          // Count how many times this substring appears
+          let count = 0;
+          let pos = 0;
+          while ((pos = resumeLower.indexOf(lowerKeyword, pos)) !== -1) {
+            count++;
+            pos += lowerKeyword.length;
+          }
+          matches = count;
+        }
+      }
+      
+      score += matches;
+      if (matches > 0) {
+        console.log(`${tag}: found "${keyword}" ${matches} times`);
+      }
+    }
+    if (score > 0) {
+      tagScores[tag] = score;
+      extractedTags.add(tag);
+    }
+  }
+  
+  console.log("Extracted tags:", extractedTags);
+  console.log("Tag scores:", tagScores);
+  
+  // Sort by score and return top tags
+  const sortedTags = Object.entries(tagScores)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 4)
+    .map(([tag]) => tag);
+  
+  console.log("Final sorted tags:", sortedTags);
+  return sortedTags;
+}
+
+// -------------------- ANALYZE RESUME --------------------
+async function analyzeResume(file) {
+  const statusDiv = document.getElementById("status");
+  const resultsDiv = document.getElementById("results");
+  const quizDiv = document.getElementById("quiz");
+  const backBtn = document.getElementById("backBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const resetBtn = document.getElementById("resetBtn");
+
+  statusDiv.textContent = "Analyzing resume...";
+  quizDiv.innerHTML = "";
+  resultsDiv.innerHTML = "";
+
+  try {
+    // Extract text from PDF
+    const resumeText = await extractTextFromPDF(file);
+    
+    // Extract tags
+    const extractedTags = extractTagsFromResume(resumeText);
+    
+    if (extractedTags.length === 0) {
+      statusDiv.textContent = "No matching tags found in resume. Try the questionnaire instead.";
+      backBtn.disabled = false;
+      nextBtn.textContent = "Back";
+      nextBtn.dataset.mode = "back-home";
+      return;
+    }
+    
+    // Set state and search
+    appState.userGender = "*"; // Neutral gender
+    appState.tags = new Set(extractedTags);
+    
+    statusDiv.textContent = `Found tags: ${extractedTags.join(", ")}`;
+    
+    const activities = await loadActivities();
+    const matches = searchClubs(activities, extractedTags, appState.userGender);
+    
+    statusDiv.textContent = `${matches.length} clubs found based on your resume`;
+    renderResults(matches, resultsDiv);
+    
+    backBtn.disabled = false;
+    nextBtn.textContent = "Back";
+    nextBtn.dataset.mode = "back-home";
+    resetBtn.classList.remove("hidden");
+  } catch (error) {
+    statusDiv.textContent = "Error analyzing resume: " + error.message;
+    console.error(error);
+    backBtn.disabled = false;
+    nextBtn.textContent = "Back";
+    nextBtn.dataset.mode = "back-home";
+  }
+}
 
 // -------------------- DATA LOAD --------------------
 async function loadActivities() {
@@ -402,6 +614,11 @@ function resetApp() {
 
   document.getElementById("nextBtn").textContent = "Next";
   document.getElementById("nextBtn").dataset.mode = "next";
+  
+  // Reset resume input
+  const resumeInput = document.getElementById("resumeInput");
+  resumeInput.value = "";
+  selectedResumeFile = null;
 
   // go back to homepage
   appDiv.classList.add("hidden");
@@ -447,6 +664,8 @@ document.getElementById("nextBtn").addEventListener("click", async () => {
   const btn = document.getElementById("nextBtn");
   if (btn.dataset.mode === "search") {
     await runSearch();
+  } else if (btn.dataset.mode === "back-home") {
+    resetApp();
   } else {
     goNext();
   }
