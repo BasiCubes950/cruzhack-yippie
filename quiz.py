@@ -4,10 +4,8 @@ def run_profile_quiz():
     # --- Basic profiling ---
     print("Basic Profiling\n")
 
-    profile["grade"] = input("Grade (9 / 10 / 11 / 12): ").strip()
-
     profile["gender"] = input(
-        "Gender (Male / Female / Non-binary / Prefer not to say): "
+        "Gender (Male / Female / LGBTQ+ / Prefer not to say): "
     ).strip()
 
     profile["ethnicity"] = input(

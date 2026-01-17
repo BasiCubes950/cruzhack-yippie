@@ -4,36 +4,31 @@
   <meta charset="utf-8" />
   <title>Club Finder</title>
   <style>
-  body { font-family: Arial, sans-serif; width: 320px; padding: 10px; }
-  button { width: 100%; padding: 8px; margin-top: 8px; cursor: pointer; }
-  .club { margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 13px; }
-  .small { color: #555; font-size: 12px; }
-  .toggleRow { margin-top: 6px; display: flex; gap: 6px; }
-  .toggleRow button { width: auto; flex: 1; padding: 6px; margin-top: 0; }
-  .desc { margin-top: 6px; padding: 6px; background: #f6f6f6; border-radius: 6px; }
-  .hidden { display: none; }
-</style>
+    body { font-family: Arial, sans-serif; width: 340px; padding: 10px; }
+    button { width: 100%; padding: 8px; margin-top: 10px; cursor: pointer; }
+    .section { margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; }
+    .q { margin-top: 10px; }
+    .q-title { font-weight: 600; margin-bottom: 6px; }
+    .opt { display: block; margin: 4px 0; }
+    .small { color: #555; font-size: 12px; margin-top: 6px; }
+    .hidden { display: none; }
 
+    .club { margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 13px; }
+    .toggleRow { margin-top: 6px; display: flex; gap: 6px; }
+    .toggleRow button { width: auto; flex: 1; padding: 6px; margin-top: 0; }
+    .desc { margin-top: 6px; padding: 6px; background: #f6f6f6; border-radius: 6px; }
+  </style>
 </head>
 <body>
   <h3>Club Finder</h3>
 
-  <label>Gender:</label>
-  <select id="gender">
-    <option value="***">men (***)</option>
-    <option value="**" selected>women (**)</option>
-    <option value="*">other (*)</option>
-  </select>
-
-  <br /><br />
-
-  <label>Tags (comma separated):</label>
-  <input id="tags" value="volunteering" style="width:100%;" />
-
-  <button id="searchBtn">Search Clubs</button>
-
+  <!-- QUIZ -->
+  <div id="quiz"></div>
+  <button id="submitBtn">Find my clubs</button>
   <div id="status" class="small"></div>
-  <div id="results"></div>
+
+  <!-- RESULTS -->
+  <div id="results" class="section"></div>
 
   <script src="popup.js"></script>
 </body>
