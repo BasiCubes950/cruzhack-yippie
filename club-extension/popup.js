@@ -384,6 +384,9 @@ function goBack() {
     appState.stepId = chosenOpt.next;
   }
 
+  // hide reset button
+  document.getElementById("resetBtn").classList.add("hidden");
+
   renderStep();
 }
 
