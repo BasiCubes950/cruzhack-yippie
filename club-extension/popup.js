@@ -439,3 +439,5 @@ document.getElementById("nextBtn").addEventListener("click", async () => {
 // initial render
 renderStep();
 document.getElementById("resetBtn").addEventListener("click", resetApp);
+
+// test
