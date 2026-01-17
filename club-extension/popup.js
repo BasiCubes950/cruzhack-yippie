@@ -15,6 +15,8 @@ document.getElementById("luckyBtn").addEventListener("click", async () => {
   homeDiv.classList.add("hidden");
   appDiv.classList.remove("hidden");
   document.body.style.backgroundImage = "url('Results.png')";
+  document.getElementById("nextBtn").style.marginTop = "60px";
+  document.getElementById("backBtn").style.marginTop = "60px";
   await showRandomClub();
 });
 
@@ -370,6 +372,9 @@ function goNext() {
 
 function goBack() {
   document.body.style.backgroundImage = "url('Quiz.png')";
+  document.getElementById("nextBtn").style.marginTop = "0px";
+  document.getElementById("backBtn").style.marginTop = "0px";
+
   const statusDiv = document.getElementById("status");
   statusDiv.textContent = "";
 
@@ -416,6 +421,8 @@ function resetApp() {
   appDiv.classList.add("hidden");
   homeDiv.classList.remove("hidden");
   document.body.style.backgroundImage = "url('Homepage.png')";
+  document.getElementById("nextBtn").style.marginTop = "0px";
+  document.getElementById("backBtn").style.marginTop = "0px";
 }
 
 /**
@@ -544,6 +551,9 @@ async function runSearch() {
   renderResults(matches, resultsDiv);
   document.getElementById("resetBtn").classList.remove("hidden");
   document.body.style.backgroundImage = "url('Results.png')";
+  document.getElementById("quiz").innerHTML = "";
+  document.getElementById("nextBtn").style.marginTop = "60px";
+  document.getElementById("backBtn").style.marginTop = "60px";
 }
 
 // -------------------- INIT --------------------
