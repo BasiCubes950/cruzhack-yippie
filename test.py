@@ -68,3 +68,5 @@ for i, club in enumerate(ranked, 1):
     print(f"   Why: {club['reason']}")
     print(f"   Contact: {club['email']}")
     print("-" * 40)
+
+# export OPENAI_API_KEY="your_api_key_here"
