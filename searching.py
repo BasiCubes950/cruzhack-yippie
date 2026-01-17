@@ -44,10 +44,13 @@ def search_clubs(activities, tags, user_gender):
 """
 
 user_gender = "**"
-tags = {"volunteering", "community"}
+tags = {"volunteering"}
 
 activities = load_activities("activities.json")
 matches = search_clubs(activities, tags, user_gender)
-
+num = 0
 for name, contact, link in matches:
+    num += 1
     print(name, contact, link)
+
+print(num)
