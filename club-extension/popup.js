@@ -11,6 +11,13 @@ document.getElementById("startBtn").addEventListener("click", () => {
   renderStep();
 });
 
+document.getElementById("luckyBtn").addEventListener("click", async () => {
+  homeDiv.classList.add("hidden");
+  appDiv.classList.remove("hidden");
+  document.body.style.backgroundImage = "url('Results.png')";
+  await showRandomClub();
+});
+
 
 // -------------------- DATA LOAD --------------------
 async function loadActivities() {
@@ -365,8 +372,6 @@ function goBack() {
   document.body.style.backgroundImage = "url('Quiz.png')";
   const statusDiv = document.getElementById("status");
   statusDiv.textContent = "";
-  document.getElementById("backBtn").style.marginTop = "0px";
-  document.getElementById("nextBtn").style.marginTop = "0px";
 
   const prev = appState.history.pop();
   if (!prev) return;
@@ -411,10 +416,109 @@ function resetApp() {
   appDiv.classList.add("hidden");
   homeDiv.classList.remove("hidden");
   document.body.style.backgroundImage = "url('Homepage.png')";
-  document.getElementById("backBtn").style.marginTop = "0px";
-  document.getElementById("nextBtn").style.marginTop = "0px";
 }
 
+/**
+ * Shrinks the text of `el` until it fits within `maxHeightPx`.
+ * Adjustable limit + safe guards.
+ *
+ * Returns the final font size (px).
+ */
+function fitTextToHeight(el, {
+  maxHeightPx = 120,   // <-- adjustable height limit
+  maxFontPx = 40,      // starting / cap
+  minFontPx = 18,      // don't shrink below this
+  stepPx = 1           // shrink amount per iteration
+} = {}) {
+  if (!el) return null;
+
+  // Start from computed font size or maxFontPx (whichever is smaller/larger depending on your preference)
+  const computed = parseFloat(getComputedStyle(el).fontSize) || maxFontPx;
+  let fontPx = Math.min(Math.max(computed, minFontPx), maxFontPx);
+
+  // Apply start size
+  el.style.fontSize = fontPx + "px";
+
+  // If already fits, we're done
+  if (el.scrollHeight <= maxHeightPx) return fontPx;
+
+  // Shrink until it fits or hits min
+  while (el.scrollHeight > maxHeightPx && fontPx > minFontPx) {
+    fontPx -= stepPx;
+    el.style.fontSize = fontPx + "px";
+  }
+
+  return fontPx;
+}
+
+
+// -------------------- RANDOM CLUB SELECTION --------------------
+async function showRandomClub() {
+  const statusDiv = document.getElementById("status");
+  const resultsDiv = document.getElementById("results");
+  const quizDiv = document.getElementById("quiz");
+  const backBtn = document.getElementById("backBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const resetBtn = document.getElementById("resetBtn");
+
+  statusDiv.textContent = "Loading a random club for you...";
+  quizDiv.innerHTML = "";
+  resultsDiv.innerHTML = "";
+
+  try {
+    const activities = await loadActivities();
+    const allClubs = [];
+    const seen = new Set();
+    const GENDER_BLOCKS = new Set(["*", "**", "***"]);
+
+    // Gather all clubs from all tags
+    for (const activity of activities) {
+      for (const tagName in activity) {
+        const clubList = activity[tagName];
+        for (const club of clubList) {
+          const name = club[0];
+          const contact = club[1];
+          const lastField = club[club.length - 1];
+          
+          // Skip gender-blocked clubs
+          if (GENDER_BLOCKS.has(lastField)) continue;
+
+          const description =
+            typeof club[2] === "string" && club[2].trim() ? club[2] : "(No description)";
+          const email =
+            typeof club[3] === "string" && club[3].trim() ? club[3] : "";
+
+          const key = `${name}|${contact}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            allClubs.push({ name, contact, email, description });
+          }
+        }
+      }
+    }
+
+    if (allClubs.length === 0) {
+      statusDiv.textContent = "No clubs found!";
+      return;
+    }
+
+    // Pick a random club
+    const randomClub = allClubs[Math.floor(Math.random() * allClubs.length)];
+
+    // Display the random club
+    statusDiv.textContent = `Random club selected! (${allClubs.length} clubs available)`;
+    renderResults([randomClub], resultsDiv);
+
+    // Setup buttons
+    backBtn.disabled = true;
+    nextBtn.textContent = "Get Another";
+    nextBtn.dataset.mode = "lucky";
+    resetBtn.classList.remove("hidden");
+  } catch (error) {
+    statusDiv.textContent = "Error loading clubs. Please try again.";
+    console.error(error);
+  }
+}
 
 // -------------------- RUN SEARCH AFTER LEAF --------------------
 async function runSearch() {
@@ -439,10 +543,7 @@ async function runSearch() {
   statusDiv.textContent = `${matches.length} clubs found`;
   renderResults(matches, resultsDiv);
   document.getElementById("resetBtn").classList.remove("hidden");
-  document.getElementById("quiz").innerHTML = "";
   document.body.style.backgroundImage = "url('Results.png')";
-  document.getElementById("backBtn").style.marginTop = "60px";
-  document.getElementById("nextBtn").style.marginTop = "60px";
 }
 
 // -------------------- INIT --------------------
@@ -452,6 +553,8 @@ document.getElementById("nextBtn").addEventListener("click", async () => {
   const btn = document.getElementById("nextBtn");
   if (btn.dataset.mode === "search") {
     await runSearch();
+  } else if (btn.dataset.mode === "lucky") {
+    await showRandomClub();
   } else {
     goNext();
   }
