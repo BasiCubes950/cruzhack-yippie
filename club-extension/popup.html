@@ -1,41 +1,124 @@
-<!-- popup.html -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Club Finder</title>
+  <title>Activity Finder</title>
   <style>
-    body { font-family: Arial, sans-serif; width: 340px; padding: 10px; }
-    .row { margin-top: 10px; }
-    button { width: 100%; padding: 8px; margin-top: 10px; cursor: pointer; }
-    .section { margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; }
-    .q { margin-top: 10px; }
-    .q-title { font-weight: 600; margin-bottom: 6px; }
-    .opt { display: block; margin: 4px 0; }
-    .small { color: #555; font-size: 12px; margin-top: 6px; }
-    .hidden { display: none; }
+    body {
+      font-family: Arial, sans-serif;
+      width: 360px;
+      height: 520px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
 
-    .club { margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 13px; }
-    .toggleRow { margin-top: 6px; display: flex; gap: 6px; }
-    .toggleRow button { width: auto; flex: 1; padding: 6px; margin-top: 0; }
-    .desc { margin-top: 6px; padding: 6px; background: #f6f6f6; border-radius: 6px; }
+    /* ---------- SHARED ---------- */
+    button {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .small {
+      font-size: 12px;
+      color: #555;
+    }
+
+    /* ---------- HOME PAGE ---------- */
+    #home {
+      text-align: center;
+      margin-top: 70px;
+    }
+
+    #home h1 {
+      margin-bottom: 80px;
+      font-size: 24px;
+    }
+
+    #startBtn {
+      width: 70%;
+      margin: 0 auto;
+    }
+
+    /* ---------- QUIZ ---------- */
+    .q {
+      margin-top: 12px;
+    }
+
+    .q-title {
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .opt {
+      display: block;
+      margin: 6px 0;
+    }
+
+    /* ---------- RESULTS ---------- */
+    .club {
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px solid #ddd;
+      font-size: 13px;
+    }
+
+    .toggleRow {
+      margin-top: 6px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .toggleRow button {
+      width: auto;
+      flex: 1;
+      padding: 6px;
+    }
+
+    .desc {
+      margin-top: 6px;
+      padding: 6px;
+      background: #f6f6f6;
+      border-radius: 6px;
+    }
+
+    /* ---------- NAV ---------- */
+    #navRow {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-  <h3>Club Finder</h3>
 
-  <div id="quiz"></div>
-
-  <div class="row" style="display:flex; gap:8px;">
-    <button id="backBtn" style="flex:1;">Back</button>
-    <button id="nextBtn" style="flex:1;">Next</button>
+  <!-- HOME PAGE -->
+  <div id="home">
+    <h1>Activity Finder</h1>
+    <button id="startBtn">Start</button>
   </div>
 
-  <button id="resetBtn" class="hidden">Start Over</button>
+  <!-- QUIZ + RESULTS -->
+  <div id="app" class="hidden">
 
-  <div id="status" class="small"></div>
+    <div id="quiz"></div>
 
-  <div id="results" class="section"></div>
+    <div id="navRow">
+      <button id="backBtn">Back</button>
+      <button id="nextBtn">Next</button>
+    </div>
+
+    <div id="status" class="small"></div>
+
+    <div id="results"></div>
+
+    <button id="resetBtn" class="hidden">Start Over</button>
+  </div>
 
   <script src="popup.js"></script>
 </body>
