@@ -1,3 +1,4 @@
+<!-- popup.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,6 +6,7 @@
   <title>Club Finder</title>
   <style>
     body { font-family: Arial, sans-serif; width: 340px; padding: 10px; }
+    .row { margin-top: 10px; }
     button { width: 100%; padding: 8px; margin-top: 10px; cursor: pointer; }
     .section { margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; }
     .q { margin-top: 10px; }
@@ -22,12 +24,17 @@
 <body>
   <h3>Club Finder</h3>
 
-  <!-- QUIZ -->
   <div id="quiz"></div>
-  <button id="submitBtn">Find my clubs</button>
+
+  <div class="row" style="display:flex; gap:8px;">
+    <button id="backBtn" style="flex:1;">Back</button>
+    <button id="nextBtn" style="flex:1;">Next</button>
+  </div>
+
+  <button id="resetBtn" class="hidden">Start Over</button>
+
   <div id="status" class="small"></div>
 
-  <!-- RESULTS -->
   <div id="results" class="section"></div>
 
   <script src="popup.js"></script>
